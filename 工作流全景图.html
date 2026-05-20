@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>循环迭代研发 Agent 团队 - 工作流全景图</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+            padding-left: 16px;
+            border-left: 4px solid var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .section-title.purple { border-left-color: var(--accent-purple); }
+        .section-title.green { border-left-color: var(--accent-green); }
+        .section-title.orange { border-left-color: var(--accent-orange); }
+        .section-title.cyan { border-left-color: var(--accent-cyan); }
+
+        /* Role Cards */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+
+        .role-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--card-accent);
+        }
+
+        .role-card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .role-card .role-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .role-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .role-card .role-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .role-card .role-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .role-card .role-output {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.85rem;
+        }
+
+        .role-card .role-output .label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .role-card .role-output .value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Workflow Flow */
+        .workflow-section {
+            margin-bottom: 80px;
+        }
+
+        .flow-container {
+            position: relative;
+        }
+
+        .flow-step {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 0;
+            position: relative;
+        }
+
+        .flow-step:not(:last-child) {
+            padding-bottom: 40px;
+        }
+
+        .flow-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 31px;
+            top: 64px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .flow-step .step-marker {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .flow-step .step-content {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .flow-step .step-content h4 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .flow-step .step-content .step-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .flow-step .step-content .step-meta .tag {
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .flow-step .step-content .step-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .flow-step .step-content .step-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .flow-step .step-content .step-details .detail-item {
+            background: rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 10px 14px;
+        }
+
+        .flow-step .step-content .step-details .detail-item .detail-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .flow-step .step-content .step-details .detail-item .detail-value {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Loop Diagram */
+        .loop-section {
+            margin-bottom: 80px;
+        }
+
+        .loop-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 48px;
+            position: relative;
+        }
+
+        .loop-center {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .loop-center h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .loop-center p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .loop-nodes {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .loop-node {
+            width: 140px;
+            height: 100px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            position: relative;
+            transition: transform 0.3s ease;
+            cursor: default;
+        }
+
+        .loop-node:hover {
+            transform: scale(1.08);
+        }
+
+        .loop-node .node-num {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .loop-node .node-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .loop-arrow {
+            width: 40px;
+            height: 2px;
+            background: var(--border-color);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .loop-arrow::after {
+            content: '▶';
+            position: absolute;
+            right: -6px;
+            top: -9px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Decision Tree */
+        .decision-section {
+            margin-bottom: 80px;
+        }
+
+        .decision-tree {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 36px;
+        }
+
+        .decision-node {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid;
+        }
+
+        .decision-node h5 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .decision-node p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .decision-children {
+            margin-left: 32px;
+            margin-top: 8px;
+        }
+
+        /* Data Flow Table */
+        .dataflow-section {
+            margin-bottom: 80px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: rgba(0,0,0,0.3);
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: 14px 18px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        /* Quality Gates */
+        .gates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 80px;
+        }
+
+        .gate-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .gate-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .gate-card .gate-num {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 auto 16px;
+        }
+
+        .gate-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .gate-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Principles */
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .principle-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .principle-card .principle-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .principle-card h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .principle-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 24px 16px; }
+            .header h1 { font-size: 1.8rem; }
+            .roles-grid { grid-template-columns: 1fr; }
+            .flow-step .step-content .step-details { grid-template-columns: 1fr; }
+            .loop-nodes { flex-direction: column; }
+            .loop-arrow { width: 2px; height: 30px; }
+            .loop-arrow::after { right: -6px; top: auto; bottom: -8px; content: '▼'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>循环迭代研发 Agent 团队</h1>
+            <p>从需求到交付的完整闭环——六角色协作、五阶段循环、零业务中断的安全迭代体系</p>
+        </div>
+
+        <!-- Section 1: Roles -->
+        <h2 class="section-title">六角色团队</h2>
+        <div class="roles-grid">
+            <!-- Role 1 -->
+            <div class="role-card" style="--card-accent: #3b82f6;">
+                <div class="role-icon" style="background: rgba(59,130,246,0.15); color: #3b82f6;">🏗</div>
+                <h3>产品架构师</h3>
+                <div class="role-subtitle">Product Architect</div>
+                <div class="role-desc">兼具顶级产品思维与底层架构把控力，将业务需求转化为演进式架构蓝图，确保快速验证业务闭环同时不留技术死角。</div>
+                <div class="role-output">
+                    <div class="label">核心输出</div>
+                    <div class="value">演进式架构落地切片计划</div>
+                </div>
+            </div>
+
+            <!-- Role 2 -->
+            <div class="role-card" style="--card-accent: #8b5cf6;">
+                <div class="role-icon" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">🛡</div>
+                <h3>安全切片规划师</h3>
+                <div class="role-subtitle">Safe Slicing Planner</div>
+                <div class="role-desc">将任何复杂变更转化为零业务中断、可安全回滚的工程化执行步骤，是团队的"安全阀"。</div>
+                <div class="role-output">
+                    <div class="label">核心输出</div>
+                    <div class="value">安全执行切片计划</div>
+                </div>
+            </div>
+
+            <!-- Role 3 -->
+            <div class="role-card" style="--card-accent: #ef4444;">
+                <div class="role-icon" style="background: rgba(239,68,68,0.15); color: #ef4444;">🔍</div>
+                <h3>代码审查专家</h3>
+                <div class="role-subtitle">Code Review Expert</div>
+                <div class="role-desc">15年+经验的"找茬"专家，四维度深度审查：功能性Bug、安全漏洞、代码质量、业务逻辑，一个不漏。</div>
+                <div class="role-output">
+                    <div class="label">核心输出</div>
+                    <div class="value">四维度审查报告</div>
+                </div>
+            </div>
+
+            <!-- Role 4 -->
+            <div class="role-card" style="--card-accent: #f59e0b;">
+                <div class="role-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">⚖</div>
+                <h3>架构审计师</h3>
+                <div class="role-subtitle">Architecture Auditor</div>
+                <div class="role-desc">宏观层面的"体检医生"，评估架构合理性、业务闭环、项目完成度，识别架构债务和系统性风险。</div>
+                <div class="role-output">
+                    <div class="label">核心输出</div>
+                    <div class="value">架构审计报告</div>
+                </div>
+            </div>
+
+            <!-- Role 5 -->
+            <div class="role-card" style="--card-accent: #10b981;">
+                <div class="role-icon" style="background: rgba(16,185,129,0.15); color: #10b981;">🔧</div>
+                <h3>自动修复工程师</h3>
+                <div class="role-subtitle">Auto Fix Engineer</div>
+                <div class="role-desc">按切片计划逐项核实并修复问题，遵循"最小改动、最大安全"原则，先核实再动手，不引入新依赖。</div>
+                <div class="role-output">
+                    <div class="label">核心输出</div>
+                    <div class="value">修复摘要报告</div>
+                </div>
+            </div>
+
+            <!-- Role 6 -->
+            <div class="role-card" style="--card-accent: #06b6d4;">
+                <div class="role-icon" style="background: rgba(6,182,212,0.15); color: #06b6d4;">📋</div>
+                <h3>运维管家</h3>
+                <div class="role-subtitle">DevOps Steward</div>
+                <div class="role-desc">团队的"大管家"，负责垃圾文件清理、工作记录、迭代节奏管理和文档归档，确保上下文不丢失。</div>
+                <div class="role-output">
+                    <div class="label">核心输出</div>
+                    <div class="value">工作记录 / 迭代总结</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Workflow -->
+        <h2 class="section-title purple">五阶段工作流</h2>
+        <div class="workflow-section">
+            <div class="flow-container">
+                <!-- Phase 0 -->
+                <div class="flow-step">
+                    <div class="step-marker" style="background: rgba(6,182,212,0.15); color: #06b6d4;">0</div>
+                    <div class="step-content">
+                        <h4>迭代启动</h4>
+                        <div class="step-meta">
+                            <span class="tag" style="background: rgba(6,182,212,0.15); color: #06b6d4;">运维管家</span>
+                            <span class="tag" style="background: rgba(100,116,139,0.2); color: #94a3b8;">准备阶段</span>
+                        </div>
+                        <div class="step-desc">读取上一轮迭代总结恢复上下文，确认本轮迭代目标和范围，准备输入材料。</div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <div class="detail-label">输入</div>
+                                <div class="detail-value">上一轮迭代总结、需求文档</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">输出</div>
+                                <div class="detail-value">迭代启动声明</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 1 -->
+                <div class="flow-step">
+                    <div class="step-marker" style="background: rgba(59,130,246,0.15); color: #3b82f6;">1</div>
+                    <div class="step-content">
+                        <h4>架构规划</h4>
+                        <div class="step-meta">
+                            <span class="tag" style="background: rgba(59,130,246,0.15); color: #3b82f6;">产品架构师</span>
+                            <span class="tag" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">安全切片规划师</span>
+                        </div>
+                        <div class="step-desc">产品架构师输出演进式架构落地切片计划（MVP边界、API契约、防腐层），安全切片规划师据此制定安全执行切片计划（依赖拓扑、兼容策略、回滚方案）。</div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <div class="detail-label">门控标准</div>
+                                <div class="detail-value">架构计划 + 切片计划均确认通过</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">核心风险</div>
+                                <div class="detail-value">过早过度设计 / 边界模糊</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="flow-step">
+                    <div class="step-marker" style="background: rgba(16,185,129,0.15); color: #10b981;">2</div>
+                    <div class="step-content">
+                        <h4>代码实现</h4>
+                        <div class="step-meta">
+                            <span class="tag" style="background: rgba(16,185,129,0.15); color: #10b981;">开发团队</span>
+                            <span class="tag" style="background: rgba(100,116,139,0.2); color: #94a3b8;">受切片计划约束</span>
+                        </div>
+                        <div class="step-desc">按安全执行切片计划的步骤顺序实现代码，每个步骤完成后执行验收标准，验收通过后进入下一步，失败则回滚重做。</div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <div class="detail-label">约束</div>
+                                <div class="detail-value">严格按步骤顺序，不得跳步</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">输出</div>
+                                <div class="detail-value">实现代码 + 各步骤验收记录</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="flow-step">
+                    <div class="step-marker" style="background: rgba(239,68,68,0.15); color: #ef4444;">3</div>
+                    <div class="step-content">
+                        <h4>代码审查</h4>
+                        <div class="step-meta">
+                            <span class="tag" style="background: rgba(239,68,68,0.15); color: #ef4444;">代码审查专家</span>
+                            <span class="tag" style="background: rgba(245,158,11,0.15); color: #f59e0b;">架构审计师</span>
+                        </div>
+                        <div class="step-desc">代码审查专家进行四维度深度审查（功能Bug→安全→质量→业务逻辑），架构审计师进行宏观审计（架构合理性→业务闭环→完成度→缺陷排查）。</div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <div class="detail-label">决策树</div>
+                                <div class="detail-value">P0→立即修复 / P1→修复 / P2→评估 / P3→推迟</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">输出</div>
+                                <div class="detail-value">审查报告 + 审计报告</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="flow-step">
+                    <div class="step-marker" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">4</div>
+                    <div class="step-content">
+                        <h4>安全修复</h4>
+                        <div class="step-meta">
+                            <span class="tag" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">安全切片规划师</span>
+                            <span class="tag" style="background: rgba(16,185,129,0.15); color: #10b981;">自动修复工程师</span>
+                        </div>
+                        <div class="step-desc">安全切片规划师制定修复切片计划，自动修复工程师按四阶段执行（快速修复→需测试验证→仅评估→跳过），修复后回归审查。</div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <div class="detail-label">回归审查</div>
+                                <div class="detail-value">通过→收尾 / 新P0P1→重新规划 / 未解决→重新修复</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">输出</div>
+                                <div class="detail-value">修复摘要报告 + 验证结果</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 5 -->
+                <div class="flow-step">
+                    <div class="step-marker" style="background: rgba(6,182,212,0.15); color: #06b6d4;">5</div>
+                    <div class="step-content">
+                        <h4>迭代收尾</h4>
+                        <div class="step-meta">
+                            <span class="tag" style="background: rgba(6,182,212,0.15); color: #06b6d4;">运维管家</span>
+                        </div>
+                        <div class="step-desc">垃圾文件清理（确认后执行）、工作记录、迭代总结、文档归档。准备下一轮迭代的输入。</div>
+                        <div class="step-details">
+                            <div class="detail-item">
+                                <div class="detail-label">完成标准</div>
+                                <div class="detail-value">构建通过 + 测试通过 + 文档归档</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">输出</div>
+                                <div class="detail-value">迭代总结 + 遗留问题清单</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Loop -->
+        <h2 class="section-title green">循环迭代机制</h2>
+        <div class="loop-section">
+            <div class="loop-diagram">
+                <div class="loop-center">
+                    <h3>持续迭代，直到交付</h3>
+                    <p>每一轮迭代都是"规划→实现→审查→修复→收尾"的完整闭环，遗留问题自动流入下一轮</p>
+                </div>
+                <div class="loop-nodes">
+                    <div class="loop-node" style="background: rgba(6,182,212,0.15); color: #06b6d4;">
+                        <div class="node-num">0</div>
+                        <div class="node-label">迭代启动</div>
+                    </div>
+                    <div class="loop-arrow"></div>
+                    <div class="loop-node" style="background: rgba(59,130,246,0.15); color: #3b82f6;">
+                        <div class="node-num">1</div>
+                        <div class="node-label">架构规划</div>
+                    </div>
+                    <div class="loop-arrow"></div>
+                    <div class="loop-node" style="background: rgba(16,185,129,0.15); color: #10b981;">
+                        <div class="node-num">2</div>
+                        <div class="node-label">代码实现</div>
+                    </div>
+                    <div class="loop-arrow"></div>
+                    <div class="loop-node" style="background: rgba(239,68,68,0.15); color: #ef4444;">
+                        <div class="node-num">3</div>
+                        <div class="node-label">代码审查</div>
+                    </div>
+                    <div class="loop-arrow"></div>
+                    <div class="loop-node" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">
+                        <div class="node-num">4</div>
+                        <div class="node-label">安全修复</div>
+                    </div>
+                    <div class="loop-arrow"></div>
+                    <div class="loop-node" style="background: rgba(6,182,212,0.15); color: #06b6d4;">
+                        <div class="node-num">5</div>
+                        <div class="node-label">迭代收尾</div>
+                    </div>
+                    <div class="loop-arrow" style="width: 60px;"></div>
+                    <div class="loop-node" style="background: rgba(236,72,153,0.15); color: #ec4899;">
+                        <div class="node-num">↻</div>
+                        <div class="node-label">下一轮迭代</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Decision Tree -->
+        <h2 class="section-title orange">审查结果决策树</h2>
+        <div class="decision-section">
+            <div class="decision-tree">
+                <div class="decision-node" style="border-left-color: var(--text-muted); background: rgba(100,116,139,0.1);">
+                    <h5>审查完成，是否存在问题？</h5>
+                    <p>代码审查专家 + 架构审计师联合输出</p>
+                </div>
+                <div class="decision-children">
+                    <div class="decision-node" style="border-left-color: var(--accent-red); background: rgba(239,68,68,0.08);">
+                        <h5>P0 致命问题 → 立即修复</h5>
+                        <p>崩溃、数据丢失、安全漏洞 → 进入阶段四安全修复</p>
+                    </div>
+                    <div class="decision-node" style="border-left-color: var(--accent-orange); background: rgba(245,158,11,0.08);">
+                        <h5>P1 高优先级 → 本轮修复</h5>
+                        <p>大概率触发Bug、明显安全漏洞 → 进入阶段四安全修复</p>
+                    </div>
+                    <div class="decision-node" style="border-left-color: var(--accent-blue); background: rgba(59,130,246,0.08);">
+                        <h5>P2 中优先级 → 评估决定</h5>
+                        <p>逻辑不严谨、一致性隐患 → 评估是否本轮修复或推迟到下一迭代</p>
+                    </div>
+                    <div class="decision-node" style="border-left-color: var(--accent-green); background: rgba(16,185,129,0.08);">
+                        <h5>P3 低优先级 → 推迟处理</h5>
+                        <p>代码规范、命名、可读性 → 记录，推迟到后续迭代</p>
+                    </div>
+                    <div class="decision-node" style="border-left-color: var(--accent-cyan); background: rgba(6,182,212,0.08);">
+                        <h5>无问题 → 进入收尾</h5>
+                        <p>审查通过，进入阶段五迭代收尾</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: Data Flow -->
+        <h2 class="section-title cyan">角色间数据流</h2>
+        <div class="dataflow-section">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>数据项</th>
+                        <th>生产者</th>
+                        <th>消费者</th>
+                        <th>格式</th>
+                        <th>存储位置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="color: var(--text-primary); font-weight: 500;">演进式架构落地切片计划</td>
+                        <td>产品架构师</td>
+                        <td>安全切片规划师</td>
+                        <td>Markdown</td>
+                        <td>docs/architecture/</td>
+                    </tr>
+                    <tr>
+                        <td style="color: var(--text-primary); font-weight: 500;">安全执行切片计划</td>
+                        <td>安全切片规划师</td>
+                        <td>自动修复工程师</td>
+                        <td>Markdown</td>
+                        <td>docs/plans/</td>
+                    </tr>
+                    <tr>
+                        <td style="color: var(--text-primary); font-weight: 500;">四维度审查报告</td>
+                        <td>代码审查专家</td>
+                        <td>安全切片规划师、架构审计师</td>
+                        <td>Markdown</td>
+                        <td>docs/reviews/</td>
+                    </tr>
+                    <tr>
+                        <td style="color: var(--text-primary); font-weight: 500;">架构审计报告</td>
+                        <td>架构审计师</td>
+                        <td>安全切片规划师、运维管家</td>
+                        <td>Markdown</td>
+                        <td>docs/audits/</td>
+                    </tr>
+                    <tr>
+                        <td style="color: var(--text-primary); font-weight: 500;">修复摘要报告</td>
+                        <td>自动修复工程师</td>
+                        <td>代码审查专家、运维管家</td>
+                        <td>Markdown</td>
+                        <td>docs/fixes/</td>
+                    </tr>
+                    <tr>
+                        <td style="color: var(--text-primary); font-weight: 500;">工作记录</td>
+                        <td>运维管家</td>
+                        <td>所有角色</td>
+                        <td>Markdown</td>
+                        <td>docs/logs/</td>
+                    </tr>
+                    <tr>
+                        <td style="color: var(--text-primary); font-weight: 500;">迭代总结</td>
+                        <td>运维管家</td>
+                        <td>产品架构师、所有角色</td>
+                        <td>Markdown</td>
+                        <td>docs/iterations/</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 6: Quality Gates -->
+        <h2 class="section-title">质量门控</h2>
+        <div class="gates-grid">
+            <div class="gate-card">
+                <div class="gate-num" style="background: rgba(59,130,246,0.15); color: #3b82f6;">1</div>
+                <h4>架构规划门控</h4>
+                <p>架构计划 + 切片计划均确认通过</p>
+            </div>
+            <div class="gate-card">
+                <div class="gate-num" style="background: rgba(16,185,129,0.15); color: #10b981;">2</div>
+                <h4>代码实现门控</h4>
+                <p>所有步骤验收标准通过</p>
+            </div>
+            <div class="gate-card">
+                <div class="gate-num" style="background: rgba(239,68,68,0.15); color: #ef4444;">3</div>
+                <h4>代码审查门控</h4>
+                <p>无 P0 级致命问题</p>
+            </div>
+            <div class="gate-card">
+                <div class="gate-num" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">4</div>
+                <h4>安全修复门控</h4>
+                <p>回归审查通过，无新问题</p>
+            </div>
+            <div class="gate-card">
+                <div class="gate-num" style="background: rgba(6,182,212,0.15); color: #06b6d4;">5</div>
+                <h4>迭代收尾门控</h4>
+                <p>构建通过 + 测试通过 + 文档归档</p>
+            </div>
+        </div>
+
+        <!-- Section 7: Core Principles -->
+        <h2 class="section-title purple">核心原则</h2>
+        <div class="principles-grid">
+            <div class="principle-card">
+                <div class="principle-icon" style="background: rgba(59,130,246,0.15); color: #3b82f6;">🚫</div>
+                <div>
+                    <h4>禁止直接生成最终代码</h4>
+                    <p>架构师和规划师只输出计划，不输出代码实现</p>
+                </div>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">📜</div>
+                <div>
+                    <h4>契约先行</h4>
+                    <p>先定义 API 契约，再实现业务逻辑</p>
+                </div>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon" style="background: rgba(239,68,68,0.15); color: #ef4444;">🛡</div>
+                <div>
+                    <h4>防腐层设计</h4>
+                    <p>破坏性修改必须有兼容层，旧逻辑先透传再剥离</p>
+                </div>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon" style="background: rgba(16,185,129,0.15); color: #10b981;">🔬</div>
+                <div>
+                    <h4>最小改动</h4>
+                    <p>修复遵循最小改动原则，不引入新依赖</p>
+                </div>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">✅</div>
+                <div>
+                    <h4>先核实再动手</h4>
+                    <p>修复前先确认问题是否真实存在，避免误修复</p>
+                </div>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon" style="background: rgba(6,182,212,0.15); color: #06b6d4;">🔄</div>
+                <div>
+                    <h4>可回滚性</h4>
+                    <p>每个步骤必须可独立回滚，避免状态不一致</p>
+                </div>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon" style="background: rgba(236,72,153,0.15); color: #ec4899;">🎯</div>
+                <div>
+                    <h4>端到端验收</h4>
+                    <p>验收标准是业务场景验证，不是"代码不报错"</p>
+                </div>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon" style="background: rgba(100,116,139,0.2); color: #94a3b8;">🔁</div>
+                <div>
+                    <h4>循环迭代</h4>
+                    <p>问题未完全解决则自动流入下一轮迭代</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
