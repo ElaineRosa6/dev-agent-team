@@ -1,0 +1,150 @@
+{
+  "version": "1.0.0",
+  "name": "sprint-team-workflow",
+  "description": "循环迭代研发团队工作流",
+  "phases": [
+    {
+      "id": "zero",
+      "name": "迭代启动",
+      "role": "devops-manager",
+      "required_artifacts": [],
+      "gate_required": false,
+      "next_phases": ["one_architect"]
+    },
+    {
+      "id": "one_architect",
+      "name": "架构规划",
+      "role": "product-architect",
+      "required_artifacts": [
+        {
+          "dir": "docs/architecture",
+          "pattern": "*.md",
+          "min_count": 1,
+          "required_sections": ["MVP", "API 契约", "验收标准"],
+          "min_length": 500
+        }
+      ],
+      "gate_required": true,
+      "next_phases": ["one_planner"]
+    },
+    {
+      "id": "one_planner",
+      "name": "安全切片",
+      "role": "slice-planner",
+      "required_artifacts": [
+        {
+          "dir": "docs/plans",
+          "pattern": "*.md",
+          "min_count": 1,
+          "required_sections": ["执行步骤", "回滚方案", "验收标准"],
+          "min_length": 500
+        }
+      ],
+      "gate_required": true,
+      "next_phases": ["two_implementation"]
+    },
+    {
+      "id": "two_implementation",
+      "name": "代码实现",
+      "role": "human",
+      "required_artifacts": [],
+      "gate_required": true,
+      "next_phases": ["three_review"]
+    },
+    {
+      "id": "three_review",
+      "name": "代码审查",
+      "role": "code-reviewer",
+      "required_artifacts": [
+        {
+          "dir": "docs/reviews",
+          "pattern": "*.md",
+          "min_count": 1,
+          "required_sections": ["审查概况", "严重问题"],
+          "min_length": 300
+        }
+      ],
+      "gate_required": false,
+      "next_phases": ["three_audit"]
+    },
+    {
+      "id": "three_audit",
+      "name": "架构审计",
+      "role": "architecture-auditor",
+      "required_artifacts": [
+        {
+          "dir": "docs/audits",
+          "pattern": "*.md",
+          "min_count": 1,
+          "required_sections": ["架构合理性", "缺陷清单"],
+          "min_length": 500
+        }
+      ],
+      "gate_required": false,
+      "next_phases": ["four_fix_plan", "five_summary"]
+    },
+    {
+      "id": "four_fix_plan",
+      "name": "修复规划",
+      "role": "slice-planner",
+      "required_artifacts": [
+        {
+          "dir": "docs/plans",
+          "pattern": "*.md",
+          "min_count": 1,
+          "required_sections": ["执行步骤", "回滚方案"],
+          "min_length": 300
+        }
+      ],
+      "gate_required": false,
+      "next_phases": ["four_fix_execute"]
+    },
+    {
+      "id": "four_fix_execute",
+      "name": "修复执行",
+      "role": "auto-fix-engineer",
+      "required_artifacts": [
+        {
+          "dir": "docs/fixes",
+          "pattern": "*.md",
+          "min_count": 1,
+          "required_sections": ["修复概况", "已修复"],
+          "min_length": 200
+        }
+      ],
+      "gate_required": false,
+      "next_phases": ["four_regression"]
+    },
+    {
+      "id": "four_regression",
+      "name": "回归审查",
+      "role": "code-reviewer",
+      "required_artifacts": [],
+      "gate_required": false,
+      "next_phases": ["five_summary"]
+    },
+    {
+      "id": "five_summary",
+      "name": "迭代收尾",
+      "role": "devops-manager",
+      "required_artifacts": [
+        {
+          "dir": "docs/iterations",
+          "pattern": "*.md",
+          "min_count": 1,
+          "required_sections": ["迭代目标", "产出物"],
+          "min_length": 200
+        }
+      ],
+      "gate_required": false,
+      "next_phases": []
+    }
+  ],
+  "decision_points": {
+    "three_audit": {
+      "condition": "has_p0_or_p1_issues",
+      "true_branch": "four_fix_plan",
+      "false_branch": "five_summary"
+    }
+  }
+}

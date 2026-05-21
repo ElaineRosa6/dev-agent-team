@@ -6,7 +6,7 @@
 
 | 组件 | 说明 |
 |------|------|
-| Commands (4) | `/sprint-start` `/sprint-review` `/sprint-fix` `/sprint-close` `/sprint-status` |
+| Commands (5) | `/sprint-start` `/sprint-review` `/sprint-fix` `/sprint-close` `/sprint-status` |
 | Agents (6) | 产品架构师、安全切片规划师、代码审查专家、架构审计师、自动修复工程师、运维管家 |
 | Skills (6) | 各角色工作流指令，自动加载 |
 | Hooks (5) | 权限拦截、危险命令拦截、删除拦截、输出校验、状态同步 |

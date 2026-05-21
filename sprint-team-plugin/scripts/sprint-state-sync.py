@@ -29,12 +29,12 @@ def sync():
 
     # 检查各目录下的最新文件
     file_mapping = {
-        "architecture_plan": "docs/architecture",
-        "execution_plan": "docs/plans",
-        "code_review": "docs/reviews",
-        "architecture_audit": "docs/audits",
-        "fix_report": "docs/fixes",
-        "iteration_summary": "docs/iterations",
+        "architecture_plan": "architecture",
+        "execution_plan": "plans",
+        "code_review": "reviews",
+        "architecture_audit": "audits",
+        "fix_report": "fixes",
+        "iteration_summary": "iterations",
     }
 
     for key, dir_path in file_mapping.items():

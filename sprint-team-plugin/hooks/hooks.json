@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 scripts/permission-guard.py \"$CLAUDE_FILE_PATH\" \"$CLUADE_TOOL_INPUT\""
+            "command": "python3 scripts/permission-guard.py \"$CLAUDE_FILE_PATH\" \"$CLAUDE_TOOL_INPUT\""
           }
         ]
       },

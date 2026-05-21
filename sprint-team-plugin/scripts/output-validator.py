@@ -111,7 +111,7 @@ def validate(file_path: str) -> list[str]:
         # 检查长度
         min_len = config.get("min_length", 0)
         if len(content.strip()) < min_len:
-            issues.append(f"文件内容过短（{len(content.strip()} < {min_len}）")
+            issues.append(f"文件内容过短（{len(content.strip())} < {min_len}）")
 
     return issues
 
