@@ -1,0 +1,11 @@
+{
+  "name": "sprint-team",
+  "version": "1.0.0",
+  "description": "循环迭代研发团队 Agent 团队：产品架构师、安全切片规划师、代码审查专家、架构审计师、自动修复工程师、运维管家",
+  "author": {
+    "name": "MonkeyCode"
+  },
+  "repository": "",
+  "license": "MIT",
+  "keywords": ["sprint", "team", "code-review", "architecture", "agent-orchestration"]
+}

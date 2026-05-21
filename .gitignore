@@ -1,12 +1,4 @@
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-
-# Env
-.env
-.env.*
-*.log
+__pycache__/
+*.pyc
+orchestrator/
+run_sprint.py

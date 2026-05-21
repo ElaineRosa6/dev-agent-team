@@ -1,0 +1,63 @@
+{
+  "permissions": {
+    "product-architect": {
+      "allowed_dirs": ["docs/architecture"],
+      "allowed_operations": ["read", "write"],
+      "forbidden_operations": ["delete", "execute"],
+      "allowed_file_extensions": [".md"],
+      "max_file_size_kb": 512,
+      "description": "只允许在 docs/architecture/ 目录输出 Markdown 文档"
+    },
+    "slice-planner": {
+      "allowed_dirs": ["docs/plans"],
+      "allowed_operations": ["read", "write"],
+      "forbidden_operations": ["delete", "execute"],
+      "allowed_file_extensions": [".md"],
+      "max_file_size_kb": 512,
+      "description": "只允许在 docs/plans/ 目录输出 Markdown 文档"
+    },
+    "code-reviewer": {
+      "allowed_dirs": ["docs/reviews"],
+      "allowed_operations": ["read", "write"],
+      "forbidden_operations": ["delete", "execute", "modify_code"],
+      "allowed_file_extensions": [".md"],
+      "max_file_size_kb": 1024,
+      "description": "只允许读取源码和输出审查报告，禁止修改代码"
+    },
+    "architecture-auditor": {
+      "allowed_dirs": ["docs/audits"],
+      "allowed_operations": ["read", "write"],
+      "forbidden_operations": ["delete", "execute", "modify_code"],
+      "allowed_file_extensions": [".md"],
+      "max_file_size_kb": 1024,
+      "description": "只允许读取项目内容和输出审计报告，禁止修改代码"
+    },
+    "auto-fix-engineer": {
+      "allowed_dirs": ["docs/fixes"],
+      "allowed_operations": ["read", "write", "modify_code"],
+      "forbidden_operations": ["delete", "execute_unsafe"],
+      "allowed_file_extensions": [".md", ".py", ".js", ".ts", ".go", ".rs", ".java"],
+      "max_file_size_kb": 2048,
+      "allowed_commands": ["build", "test", "lint"],
+      "restricted_dirs": ["node_modules", ".git", "vendor"],
+      "description": "允许修改代码但受限，禁止删除文件，禁止引入新依赖"
+    },
+    "devops-manager": {
+      "allowed_dirs": ["docs/iterations"],
+      "allowed_operations": ["read", "write"],
+      "forbidden_operations": ["delete_code", "execute_unsafe"],
+      "allowed_file_extensions": [".md"],
+      "max_file_size_kb": 512,
+      "requires_confirmation_for": ["cleanup"],
+      "description": "只允许输出迭代文档，清理操作必须等待确认"
+    }
+  },
+  "global_restrictions": {
+    "forbidden_dirs": [".git", "node_modules", "vendor", ".env"],
+    "forbidden_files": [".env", "*.key", "*.pem", "*.secret"],
+    "forbidden_commands": ["rm -rf", "drop database", "git force"],
+    "max_prompt_length": 50000,
+    "max_execution_time_seconds": 600,
+    "require_gate_confirmation": true
+  }
+}

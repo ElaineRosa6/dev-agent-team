@@ -1,0 +1,110 @@
+{
+  "sprint_id": "sprint-001",
+  "status": "initialized",
+  "current_phase": "zero",
+  "current_role": null,
+  "iteration": 1,
+  "phases": {
+    "zero": {
+      "name": "迭代启动",
+      "role": "devops-manager",
+      "status": "pending",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    },
+    "one_architect": {
+      "name": "架构规划",
+      "role": "product-architect",
+      "status": "pending",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    },
+    "one_planner": {
+      "name": "安全切片",
+      "role": "slice-planner",
+      "status": "pending",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    },
+    "two_implementation": {
+      "name": "代码实现",
+      "role": "human",
+      "status": "pending",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    },
+    "three_review": {
+      "name": "代码审查",
+      "role": "code-reviewer",
+      "status": "pending",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    },
+    "three_audit": {
+      "name": "架构审计",
+      "role": "architecture-auditor",
+      "status": "pending",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    },
+    "four_fix_plan": {
+      "name": "修复规划",
+      "role": "slice-planner",
+      "status": "skipped",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    },
+    "four_fix_execute": {
+      "name": "修复执行",
+      "role": "auto-fix-engineer",
+      "status": "skipped",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    },
+    "four_regression": {
+      "name": "回归审查",
+      "role": "code-reviewer",
+      "status": "skipped",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    },
+    "five_summary": {
+      "name": "迭代收尾",
+      "role": "devops-manager",
+      "status": "pending",
+      "gate_check": false,
+      "output_validated": false,
+      "artifacts": []
+    }
+  },
+  "context": {
+    "requirements": "",
+    "previous_summary": "",
+    "legacy_issues": []
+  },
+  "outputs": {
+    "architecture_plan": null,
+    "execution_plan": null,
+    "code_review": null,
+    "architecture_audit": null,
+    "fix_plan": null,
+    "fix_report": null,
+    "iteration_summary": null
+  },
+  "decisions": {
+    "phase_one_approved": false,
+    "needs_fix": false,
+    "fix_regression_passed": false,
+    "skip_to_next_iteration": false
+  },
+  "logs": []
+}
