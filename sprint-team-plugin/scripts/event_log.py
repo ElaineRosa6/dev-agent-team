@@ -49,7 +49,8 @@ def write_event(event_type: str, **kwargs) -> str:
 
 
 def write_guard_event(sprint_id: str, guard_type: str, blocked_action: str,
-                      reason: str, role: str = "", phase: str = "") -> str:
+                      reason: str, role: str = "", phase: str = "",
+                      status: str = "blocked") -> str:
     return write_event(
         "guard_blocked",
         sprint_id=sprint_id,
@@ -58,7 +59,7 @@ def write_guard_event(sprint_id: str, guard_type: str, blocked_action: str,
         guard_type=guard_type,
         blocked_action=blocked_action,
         reason=reason,
-        status="blocked",
+        status=status,
     )
 
 

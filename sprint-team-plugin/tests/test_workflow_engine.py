@@ -256,14 +256,24 @@ class TestWorkflowEngine:
             _os.chdir(_cwd)
 
     def test_complete_phase_with_valid_artifacts(self):
-        docs_dir = os.path.join(self.tmpdir, "docs", "architecture")
-        os.makedirs(docs_dir)
-        content = "# Test\n\n## MVP\n\n" + "x" * 200
-        with open(os.path.join(docs_dir, "plan.md"), "w") as f:
-            f.write(content)
-        self.engine.start_phase("one_architect")
-        missing = self.engine._check_required_artifacts("one_architect")
-        assert len(missing) == 0
+        import os as _os
+        _cwd = _os.getcwd()
+        _os.chdir(self.tmpdir)
+        try:
+            engine = WorkflowEngine(
+                workflow_path=self.workflow_path,
+                state_path=self.state_path,
+            )
+            docs_dir = os.path.join(self.tmpdir, "docs", "architecture")
+            os.makedirs(docs_dir)
+            content = "# Test\n\n## MVP\n\n" + "x" * 200
+            with open(os.path.join(docs_dir, "plan.md"), "w") as f:
+                f.write(content)
+            engine.start_phase("one_architect")
+            missing = engine._check_required_artifacts("one_architect")
+            assert len(missing) == 0
+        finally:
+            _os.chdir(_cwd)
 
     def test_fail_and_retry(self):
         self.engine.start_phase("zero")

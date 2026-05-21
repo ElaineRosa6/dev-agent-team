@@ -36,6 +36,10 @@
           {
             "type": "command",
             "command": "python3 scripts/output-validator.py \"$CLAUDE_FILE_PATH\""
+          },
+          {
+            "type": "command",
+            "command": "python3 scripts/quality-validator.py \"$CLAUDE_FILE_PATH\""
           }
         ]
       },
